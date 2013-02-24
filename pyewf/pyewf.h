@@ -2,10 +2,7 @@
  * Python bindings for libewf (pyewf)
  *
  * Copyright (c) 2008, David Collett <david.collett@gmail.com>
- * Copyright (c) 2009, Joachim Metz <forensics@hoffmannbv.nl>
- *
- * Integration into libewf package by Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
+ * Copyright (c) 2008-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,18 +24,30 @@
 #define _PYEWF_H
 
 #include <common.h>
+#include <types.h>
 
-/* Fix HAVE_FSTAT define in pyport.h
- */
-#undef HAVE_FSTAT
-
-#include <Python.h>
+#include "pyewf_python.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-PyObject* pyewf_open(
+#define PYEWF_ERROR_STRING_SIZE		512
+
+PyObject *pyewf_get_version(
+           PyObject *self );
+
+PyObject *pyewf_check_file_signature(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyewf_check_file_signature_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyewf_glob(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );

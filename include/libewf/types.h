@@ -1,8 +1,7 @@
 /*
  * Type definitions for libewf
  *
- * Copyright (c) 2006-2009, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
+ * Copyright (c) 2006-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,21 +24,14 @@
 
 #include <libewf/features.h>
 
-#if 1 || defined( HAVE_SYS_TYPES_H )
-#include <sys/types.h>
-
-#else
-#error Missing system type definitions (sys/types.h)
-#endif
-
-/* Type definitions for the Microsoft Visual Studio C++ compiler
+/* Microsoft C/C++ compiler
  */
 #if defined( _MSC_VER )
 
-/* Define LIBEWF_DEFINITION_INTEGER_TYPES to avoid conflict
+/* Define _LIBEWF_TYPES_H_INTEGERS to avoid conflict
  */
-#if !defined( LIBEWF_DEFINITION_INTEGER_TYPES )
-#define LIBEWF_DEFINITION_INTEGER_TYPES
+#if !defined( _LIBEWF_TYPES_H_INTEGERS )
+#define _LIBEWF_TYPES_H_INTEGERS
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,30 +60,40 @@ typedef __int32			ssize_t;
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEWF_TYPES_H_INTEGERS ) */
 
-#elif defined( __BORLANDC__ )
-
-#if __BORLANDC__ >= 0x0560
-#include <stdint.h>
-
-#else
-
-/* Define LIBEWF_DEFINITION_INTEGER_TYPES to avoid conflict
+/* Borland C/C++ compiler
  */
-#if !defined( LIBEWF_DEFINITION_INTEGER_TYPES )
-#define LIBEWF_DEFINITION_INTEGER_TYPES
+#elif defined( __BORLANDC__ )
+#if __BORLANDC__ <= 0x0560
+
+/* Define _LIBEWF_TYPES_H_INTEGERS to avoid conflict
+ */
+#if !defined( _LIBEWF_TYPES_H_INTEGERS )
+#define _LIBEWF_TYPES_H_INTEGERS
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Earlier versions of the Borland/CodeGear C++ Builder compiler
- * do not have the intptr_t
+/* Earlier versions of the Borland C++ Builder compiler
+ * do not have <stdint.h> therefore they do not support
+ * the (u)int#_t type definitions they have __int# defintions instead
  */
+typedef __int8			int8_t;
+typedef unsigned __int8		uint8_t;
+typedef __int16			int16_t;
+typedef unsigned __int16	uint16_t;
+typedef __int32			int32_t;
+typedef unsigned __int32	uint32_t;
+typedef __int64			int64_t;
+typedef unsigned __int64	uint64_t;
+
 #if defined( _WIN64 )
+typedef __int64			ssize_t;
 typedef unsigned __int64	intptr_t;
 #else
+typedef __int32			ssize_t;
 typedef unsigned __int32	intptr_t;
 #endif
 
@@ -99,14 +101,27 @@ typedef unsigned __int32	intptr_t;
 }
 #endif
 
-#endif /* LIBEWF_DEFINITION_INTEGER_TYPES */
+#endif /* !defined( _LIBEWF_TYPES_H_INTEGERS ) */
 
-#endif /* __BORLANDC__ >= 0x0560 */
+#else
+#include <stdint.h>
+#endif /* __BORLANDC__ <= 0x0560 */
+
+/* Other compilers
+ */
+#else
+
+#if 1 || defined( HAVE_SYS_TYPES_H )
+#include <sys/types.h>
+
+#else
+#error Missing system type definitions (sys/types.h)
+#endif
 
 /* Type definitions for compilers that have access to
  * <inttypes.h> or <stdint.h>
  */
-#elif 1 || defined( HAVE_INTTYPES_H )
+#if 1 || defined( HAVE_INTTYPES_H )
 #include <inttypes.h>
 
 #elif 1 || defined( HAVE_STDINT_H )
@@ -116,9 +131,22 @@ typedef unsigned __int32	intptr_t;
 #error Missing integer type definitions (inttypes.h, stdint.h)
 #endif
 
+#endif /* Compiler specific integer type definitions */
+
 #if defined( LIBEWF_HAVE_WIDE_CHARACTER_TYPE )
 
-#if 0 || defined( HAVE_WCHAR_H )
+#if defined( _MSC_VER ) || defined( __MINGW32_VERSION )
+#include <wchar.h>
+
+#elif defined( __BORLANDC__ )
+#if __BORLANDC__ <= 0x0520
+#include <string.h>
+
+#else
+#include <wchar.h>
+#endif /* __BORLANDC__ <= 0x0520 */
+
+#elif 0 || defined( HAVE_WCHAR_H )
 
 /* __USE_UNIX98 is required to add swprintf definition
  */
@@ -146,8 +174,6 @@ typedef unsigned __int32	intptr_t;
 #undef LIBEWF_DEFINITION_ISOC99
 #endif
 
-#else
-#error Missing wide character type definition (wchar.h)
 #endif
 
 #endif
@@ -179,6 +205,7 @@ typedef int64_t off64_t;
 /* The following type definitions hide internal data structures
  */
 typedef intptr_t libewf_handle_t;
+typedef intptr_t libewf_file_entry_t;
 
 #ifdef __cplusplus
 }
